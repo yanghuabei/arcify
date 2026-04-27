@@ -1340,7 +1340,114 @@ h3 {
 }
 
 
-/* Archive Section Styles */
+/* ---- Arc Import Section ---- */
+.import-arc-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+    text-align: left;
+}
+
+.import-arc-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--options-primary-color);
+    margin-bottom: 0.75rem;
+}
+
+.import-arc-description {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.import-arc-description code {
+    background: #f0f0f0;
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+.import-arc-file-row {
+    margin-bottom: 0.75rem;
+    position: relative;
+}
+
+.import-arc-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+.import-arc-file-label {
+    display: inline-block;
+    padding: 0.6rem 1rem;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--options-text-color);
+    transition: background-color 0.2s ease;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.import-arc-file-label:hover {
+    background-color: #e4e4e4;
+}
+
+.import-arc-options {
+    margin-bottom: 0.75rem;
+}
+
+.import-arc-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--options-text-color);
+    cursor: pointer;
+}
+
+.import-arc-checkbox-label input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.import-arc-btn {
+    margin-top: 0;
+}
+
+.import-arc-status {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    min-height: 1.2em;
+    line-height: 1.4;
+}
+
+.import-arc-status--info {
+    color: #555;
+}
+
+.import-arc-status--success {
+    color: #2a7f3e;
+    font-weight: 500;
+}
+
+.import-arc-status--error {
+    color: #c0392b;
+    font-weight: 500;
+}
+
+
+
 .archive-section {
     width: 100%;
     margin-top: auto;

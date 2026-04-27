@@ -15,6 +15,7 @@
 import { Utils } from './utils.js';
 import { LocalStorage } from './localstorage.js';
 import { Logger } from './logger.js';
+import { parseArcJSON, importArcSpaces } from './arc-import.js';
 
 // Default color values (must be 6-digit hex for color picker compatibility)
 const DEFAULT_COLORS = {
@@ -262,8 +263,93 @@ function setupAutoSave() {
   });
 }
 
+// ---- Arc Import ----
+
+function setImportStatus(message, type = 'info') {
+  const el = document.getElementById('arcImportStatus');
+  if (!el) return;
+  el.textContent = message;
+  el.className = `import-arc-status import-arc-status--${type}`;
+}
+
+function setupArcImport() {
+  const fileInput = document.getElementById('arcImportFile');
+  const fileLabel = document.getElementById('arcImportFileLabel');
+  const importBtn = document.getElementById('arcImportBtn');
+  const pinnedOnlyCheckbox = document.getElementById('arcImportPinnedOnly');
+
+  if (!fileInput || !importBtn) return;
+
+  // Update label text when a file is chosen and enable the import button
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files?.[0];
+    if (file) {
+      fileLabel.textContent = file.name;
+      importBtn.disabled = false;
+      setImportStatus('');
+    } else {
+      fileLabel.textContent = 'Choose StorageV2.json…';
+      importBtn.disabled = true;
+    }
+  });
+
+  importBtn.addEventListener('click', async () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+
+    importBtn.disabled = true;
+    setImportStatus('Reading file…', 'info');
+
+    try {
+      const text = await file.text();
+      const parsed = parseArcJSON(text);
+
+      if (!parsed.spaces.length) {
+        setImportStatus('No spaces found in the selected file.', 'error');
+        importBtn.disabled = false;
+        return;
+      }
+
+      if (!pinnedOnlyCheckbox) {
+        Logger.error('[ArcImport] arcImportPinnedOnly checkbox element not found');
+      }
+      const includePinnedOnly = pinnedOnlyCheckbox?.checked ?? true;
+      const totalSpaces = parsed.spaces.length;
+
+      setImportStatus(`Importing ${totalSpaces} space${totalSpaces !== 1 ? 's' : ''}…`, 'info');
+
+      const result = await importArcSpaces(parsed, {
+        includePinnedOnly,
+        onProgress: (msg) => setImportStatus(msg, 'info'),
+      });
+
+      const { imported, skipped, errors } = result;
+      if (errors.length) {
+        setImportStatus(
+          `Import completed with errors. Imported: ${imported}, Skipped: ${skipped}. Errors: ${errors.join('; ')}`,
+          'error'
+        );
+      } else {
+        setImportStatus(
+          `Import successful! ${imported} bookmark${imported !== 1 ? 's' : ''} imported across ${totalSpaces} space${totalSpaces !== 1 ? 's' : ''}.${skipped ? ` ${skipped} duplicate${skipped !== 1 ? 's' : ''} skipped.` : ''}`,
+          'success'
+        );
+      }
+
+      // Refresh the spaces dropdown so newly imported spaces show up
+      await populateSpacesDropdown(document.getElementById('defaultSpaceName')?.value);
+    } catch (err) {
+      Logger.error('[ArcImport] Import failed:', err);
+      setImportStatus(`Import failed: ${err.message}`, 'error');
+    } finally {
+      importBtn.disabled = false;
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   restoreOptions();
   setupAdvancedOptions();
   setupAutoSave();
+  setupArcImport();
 });
