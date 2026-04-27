@@ -310,6 +310,9 @@ function setupArcImport() {
         return;
       }
 
+      if (!pinnedOnlyCheckbox) {
+        Logger.error('[ArcImport] arcImportPinnedOnly checkbox element not found');
+      }
       const includePinnedOnly = pinnedOnlyCheckbox?.checked ?? true;
       const totalSpaces = parsed.spaces.length;
 

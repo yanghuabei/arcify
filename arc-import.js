@@ -115,7 +115,7 @@ function resolveStorageV2Item(id, itemMap) {
             type: 'tab',
             title: tab.savedTitle || tab.title || url,
             url,
-            isPinned: tab.isPinned ?? true, // default to true (pinned) when field is absent
+            isPinned: tab.isPinned ?? false,
         };
     }
 
@@ -140,7 +140,7 @@ function resolveStorageV2Item(id, itemMap) {
             type: 'tab',
             title: item.savedTitle || item.title || url,
             url,
-            isPinned: item.isPinned ?? true,
+            isPinned: item.isPinned ?? false,
         };
     }
 
