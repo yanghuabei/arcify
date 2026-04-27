@@ -77,6 +77,37 @@
             <small class="options-description">Default (off): show only the active tab under a collapsed folder (Arc behavior). Turn on to show all open tabs under collapsed folders.</small>
         </div>
 
+        <!-- Import from Arc Section -->
+        <div class="import-arc-section">
+            <h2 class="import-arc-title">Import from Arc Browser</h2>
+            <p class="options-description import-arc-description">
+                Migrate your Arc spaces to Arcify. Export your Arc data by going to
+                <strong>Arc → Help → Export Data</strong> and select the
+                <code>StorageV2.json</code> file below. Your pinned tabs and folders will be
+                imported as bookmarks in Arcify.
+            </p>
+
+            <div class="import-arc-file-row">
+                <label for="arcImportFile" class="import-arc-file-label" id="arcImportFileLabel">
+                    Choose StorageV2.json…
+                </label>
+                <input type="file" id="arcImportFile" accept=".json,application/json" class="import-arc-file-input">
+            </div>
+
+            <div class="import-arc-options">
+                <label class="import-arc-checkbox-label">
+                    <input type="checkbox" id="arcImportPinnedOnly" checked>
+                    Import pinned tabs only (recommended)
+                </label>
+            </div>
+
+            <button type="button" id="arcImportBtn" class="options-button import-arc-btn" disabled>
+                Import Spaces
+            </button>
+
+            <div id="arcImportStatus" class="import-arc-status" aria-live="polite"></div>
+        </div>
+
         <!-- Advanced Options Section -->
         <div class="advanced-options-section">
             <button type="button" class="advanced-options-toggle" id="advancedOptionsToggle">
@@ -171,7 +202,8 @@
     </div>
 
     <script type="module" src="utils.js"></script>
-    <script type="module" src="options.js"></script> <!-- Ensure options.js is type="module" if it uses imports -->
+    <script type="module" src="arc-import.js"></script>
+    <script type="module" src="options.js"></script>
 </body>
 
 </html>
