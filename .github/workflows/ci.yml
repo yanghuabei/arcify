@@ -2,59 +2,63 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - 'copilot/**'
   pull_request:
-    branches: [ main, develop ]
+    branches:
+      - main
+      - 'copilot/**'
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [20]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Setup Node.js ${{ matrix.node-version }}
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build extension (production)
         run: npm run build
-      
+
       - name: Create zip package
         run: npm run zip
-      
+
       - name: Verify build artifacts
         run: |
           echo "Checking build artifacts..."
           ls -la dist/
           ls -la *.zip
-          
-          echo "Verifying manifest.json exists in both builds..."
+
+          echo "Verifying manifest.json exists in dist..."
           test -f dist/manifest.json
-          
+
           echo "Verifying main files exist..."
           test -f dist/background.js
           test -f dist/sidebar.js
           test -f dist/sidebar.html
-          
+
           echo "✅ All build artifacts verified!"
-      
-      - name: Upload build artifacts (on main branch)
-        if: github.ref == 'refs/heads/main' && matrix.node-version == '18'
+
+      - name: Sanitize branch name for artifact
+        id: branch
+        run: |
+          # Replace '/' with '-' so the artifact name is safe
+          SAFE_BRANCH=$(echo "${GITHUB_REF_NAME}" | sed 's|/|-|g')
+          echo "safe_name=${SAFE_BRANCH}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload extension artifact
         uses: actions/upload-artifact@v4
         with:
-          name: extension-build
-          path: |
-            dist/
-            *.zip
-          retention-days: 7 
+          name: arcify-${{ steps.branch.outputs.safe_name }}-${{ github.sha }}
+          path: '*.zip'
+          retention-days: 30 
